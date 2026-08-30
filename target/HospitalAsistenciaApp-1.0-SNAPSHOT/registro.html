@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia - Hospital San Gabriel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #eef4f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            padding: 35px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(10, 92, 83, 0.12);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid #d2e3e0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            background: #ffffff;
+            border-radius: 50%;
+            padding: 3px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin: 0 auto 8px auto;
+            display: block;
+        }
+        .header h2 {
+            color: #0a5c53;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .header p {
+            color: #527970;
+            font-size: 11px;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2f3e46;
+            font-size: 11px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-container {
+            position: relative;
+        }
+        .input-container span {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+        }
+        input, select {
+            width: 100%;
+            padding: 11px 12px 11px 38px;
+            border: 1px solid #cadcf7;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2f3e46;
+            background-color: #f9fcfb;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0a5c53;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(10, 92, 83, 0.12);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            background: #f0f7f5;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #0a5c53;
+        }
+        .checkbox-group input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #0a5c53;
+        }
+        .checkbox-group label {
+            margin: 0;
+            color: #2f3e46;
+            text-transform: none;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Ventana emergente (Modal) */
+        .modal-permiso {
+            display: none;
+            background: #f8faf9;
+            border: 1px solid #b8d4cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-permiso h4 {
+            color: #0a5c53;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #d2e3e0;
+            padding-bottom: 5px;
+        }
+        .modal-permiso .form-group {
+            margin-bottom: 10px;
+        }
+        .modal-permiso input[type="file"] {
+            padding: 7px;
+            font-size: 11px;
+            background: #fff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button {
+            background-color: #0a5c53;
+            color: white;
+            padding: 13px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+        }
+        button:disabled {
+            background-color: #94b0a9;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        button:not(:disabled):hover {
+            background-color: #07463f;
+            transform: translateY(-1px);
+        }
+        .footer-note {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 11px;
+            color: #708a82;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="img/logo_san_gabriel.jpeg" alt="Logo Hospital San Gabriel">
+            <h2>Hospital San Gabriel</h2>
+            <p>Cuidamos tu salud, protegemos tu vida</p>
+        </div>
+
+        <form action="registrarAsistencia" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>DNI del Colaborador</label>
+                <div class="input-container">
+                    <span>🆔</span>
+                    <input type="text" id="dni" name="dni" placeholder="Ej. 74829102" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre y Apellidos</label>
+                <div class="input-container">
+                    <span>👨‍⚕️</span>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej. Dr. Carlos Mendoza" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Turno Asignado (Detectado)</label>
+                <div class="input-container">
+                    <span>⏰</span>
+                    <select id="turno" name="turno">
+                        <option value="Mañana">Turno Mañana (07:00 AM - 03:00 PM)</option>
+                        <option value="Tarde">Turno Tarde (03:00 PM - 11:00 PM)</option>
+                        <option value="Noche">Turno Noche (11:00 PM - 07:00 AM)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="permisoSalud" name="permisoSalud" value="Si">
+                <label for="permisoSalud">Solicitar permiso justificado</label>
+            </div>
+
+            <div id="seccionPermiso" class="modal-permiso">
+                <h4>Detalles del Permiso</h4>
+                
+                <div class="form-group">
+                    <label>Tipo de Permiso</label>
+                    <div class="input-container">
+                        <span>📋</span>
+                        <select name="motivoSalud" id="motivoSalud">
+                            <option value="Descanso Medico">Descanso Médico</option>
+                            <option value="Vacaciones">Vacaciones</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Días Solicitados</label>
+                    <div class="input-container">
+                        <span>📅</span>
+                        <input type="number" name="diasPermiso" id="diasPermiso" min="1" max="30" value="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Adjuntar Documento / Sustento</label>
+                    <input type="file" name="documentoMedico" id="documentoMedico" accept=".pdf, .jpg, .png, .jpeg">
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" disabled>Registrar Asistencia</button>
+        </form>
+
+        <div class="footer-note">
+            Sistema Integrado de Gestión Hospitalaria &copy; 2026
+        </div>
+    </div>
+
+    <script>
+        const horaActual = new Date().getHours();
+        const selectTurno = document.getElementById('turno');
+        
+        if (horaActual >= 7 && horaActual < 15) {
+            selectTurno.value = 'Mañana';
+        } else if (horaActual >= 15 && horaActual < 23) {
+            selectTurno.value = 'Tarde';
+        } else {
+            selectTurno.value = 'Noche';
+        }
+
+        const checkboxPermiso = document.getElementById('permisoSalud');
+        const seccionPermiso = document.getElementById('seccionPermiso');
+
+        checkboxPermiso.addEventListener('change', function() {
+            if (this.checked) {
+                seccionPermiso.style.display = 'block';
+            } else {
+                seccionPermiso.style.display = 'none';
+            }
+        });
+
+        const dniInput = document.getElementById('dni');
+        const nombreInput = document.getElementById('nombre');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function validarFormulario() {
+            if (dniInput.value.trim() !== '' && nombreInput.value.trim() !== '') {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        dniInput.addEventListener('input', validarFormulario);
+        nombreInput.addEventListener('input', validarFormulario);
+    </script>
+</body>
+</html>
