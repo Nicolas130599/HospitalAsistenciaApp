@@ -26,10 +26,9 @@ import jakarta.servlet.http.Part;
 )
 public class AsistenciaServlet extends HttpServlet {
 
-    private static final String URL = "jdbc:mysql://localhost:3307/hospital_db?useSSL=false&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3307/HospitalAsistenciaApp?useSSL=false&serverTimezone=UTC";
     private static final String USUARIO = "root";
-    private static final String PASSWORD = "123456"; 
-
+    private static final String PASSWORD = "123456";
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
