@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:pt="jakarta.faces.passthrough">
+
+    <ui:composition template="/WEB-INF/templates/plantilla.xhtml">
+
+        <ui:define name="titulo">Registrar asistencia</ui:define>
+
+        <ui:define name="contenido">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-xl-6">
+                    <div class="card card-hospital">
+                        <div class="card-body p-4">
+                            <h1 class="h4 fw-bold text-hospital mb-1">
+                                <i class="bi bi-clipboard2-check"></i> Registro de asistencia
+                            </h1>
+                            <p class="text-suave small mb-4">
+                                Ingresa el DNI: si el colaborador ya existe, sus datos se completan solos.
+                                La hora de entrada y el estado (puntual o tardanza) se calculan automáticamente.
+                            </p>
+
+                            <!-- enctype multipart: necesario para adjuntar el documento de sustento -->
+                            <h:form id="formRegistro" enctype="multipart/form-data">
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="dni" value="DNI del colaborador" styleClass="form-label fw-semibold"/>
+                                    <h:inputText id="dni" value="#{asistenciaBean.dni}" required="true"
+                                                 maxlength="8"
+                                                 requiredMessage="Ingresa el DNI"
+                                                 validatorMessage="El DNI debe tener exactamente 8 dígitos"
+                                                 styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                 pt:placeholder="Ej. 74829102" pt:inputmode="numeric" pt:autocomplete="off">
+                                        <f:validateRegex pattern="\d{8}"/>
+                                        <!-- AJAX: al salir del campo se busca el DNI en la tabla personal -->
+                                        <f:ajax event="blur" listener="#{asistenciaBean.buscarPersonal}"
+                                                render="dni msgDni nombre cargo turno avisoPersonal"/>
+                                    </h:inputText>
+                                    <h:message id="msgDni" for="dni" styleClass="invalid-feedback"/>
+                                </div>
+
+                                <h:panelGroup id="avisoPersonal" layout="block">
+                                    <h:panelGroup layout="block" rendered="#{asistenciaBean.personalExistente}"
+                                                  styleClass="alert alert-success py-2 small">
+                                        <i class="bi bi-check-circle"></i> Colaborador encontrado: se usarán su nombre, cargo y turno registrados.
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <div class="mb-3">
+                                    <h:outputLabel for="nombre" value="Nombres y apellidos" styleClass="form-label fw-semibold"/>
+                                    <h:inputText id="nombre" value="#{asistenciaBean.nombre}" required="true"
+                                                 readonly="#{asistenciaBean.personalExistente}"
+                                                 maxlength="150"
+                                                 requiredMessage="Ingresa el nombre del colaborador"
+                                                 validatorMessage="El nombre debe tener entre 3 y 150 caracteres"
+                                                 styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                 pt:placeholder="Ej. Dr. Carlos Mendoza" pt:autocomplete="off">
+                                        <f:validateLength minimum="3" maximum="150"/>
+                                    </h:inputText>
+                                    <h:message for="nombre" styleClass="invalid-feedback"/>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <h:outputLabel for="cargo" value="Cargo" styleClass="form-label fw-semibold"/>
+                                        <h:inputText id="cargo" value="#{asistenciaBean.cargo}" required="true"
+                                                     readonly="#{asistenciaBean.personalExistente}"
+                                                     maxlength="100"
+                                                     requiredMessage="Indica el cargo"
+                                                     styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                     pt:list="listaCargos" pt:placeholder="Ej. Médico" pt:autocomplete="off"/>
+                                        <h:message for="cargo" styleClass="invalid-feedback"/>
+                                        <datalist id="listaCargos">
+                                            <ui:repeat value="#{asistenciaBean.cargos}" var="c">
+                                                <option value="#{c}"></option>
+                                            </ui:repeat>
+                                        </datalist>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h:outputLabel for="turno" value="Turno (detectado por la hora)" styleClass="form-label fw-semibold"/>
+                                        <h:selectOneMenu id="turno" value="#{asistenciaBean.idTurno}"
+                                                         disabled="#{asistenciaBean.personalExistente}"
+                                                         styleClass="form-select">
+                                            <f:selectItems value="#{asistenciaBean.turnos}" var="t"
+                                                           itemValue="#{t.idTurno}" itemLabel="#{t.etiqueta}"/>
+                                        </h:selectOneMenu>
+                                    </div>
+                                </div>
+
+                                <!-- AJAX: al marcar el interruptor se muestra/oculta el panel sin recargar la página -->
+                                <div class="form-check form-switch permiso-switch p-3 ps-5 mb-3">
+                                    <h:selectBooleanCheckbox id="chkPermiso" value="#{asistenciaBean.permisoSolicitado}"
+                                                             styleClass="form-check-input">
+                                        <f:ajax render="panelPermiso"/>
+                                    </h:selectBooleanCheckbox>
+                                    <h:outputLabel for="chkPermiso" value="Registrar con permiso justificado" styleClass="form-check-label"/>
+                                </div>
+
+                                <h:panelGroup id="panelPermiso" layout="block">
+                                    <h:panelGroup layout="block" rendered="#{asistenciaBean.permisoSolicitado}"
+                                                  styleClass="card bg-light border-0 p-3 mb-3">
+                                        <h2 class="h6 fw-semibold text-hospital mb-3">Detalles del permiso</h2>
+
+                                        <div class="mb-3">
+                                            <h:outputLabel for="tipoPermiso" value="Tipo de permiso" styleClass="form-label"/>
+                                            <h:selectOneMenu id="tipoPermiso" value="#{asistenciaBean.idTipoPermiso}" styleClass="form-select">
+                                                <f:selectItems value="#{asistenciaBean.tiposPermiso}" var="tp"
+                                                               itemValue="#{tp.idTipo}" itemLabel="#{tp.nombre}"/>
+                                            </h:selectOneMenu>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h:outputLabel for="dias" value="Días solicitados" styleClass="form-label"/>
+                                            <h:inputText id="dias" value="#{asistenciaBean.diasPermiso}" required="true"
+                                                         requiredMessage="Indica cuántos días solicitas"
+                                                         converterMessage="Ingresa un número válido"
+                                                         validatorMessage="Los días deben estar entre 1 y 30"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         pt:type="number" pt:min="1" pt:max="30">
+                                                <f:validateLongRange minimum="1" maximum="30"/>
+                                            </h:inputText>
+                                            <h:message for="dias" styleClass="invalid-feedback"/>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h:outputLabel for="motivo" value="Motivo (opcional)" styleClass="form-label"/>
+                                            <h:inputTextarea id="motivo" value="#{asistenciaBean.motivo}" rows="2"
+                                                             validatorMessage="El motivo no puede superar 500 caracteres"
+                                                             styleClass="form-control #{component.valid ? '' : 'is-invalid'}">
+                                                <f:validateLength maximum="500"/>
+                                            </h:inputTextarea>
+                                            <h:message for="motivo" styleClass="invalid-feedback"/>
+                                        </div>
+
+                                        <div>
+                                            <h:outputLabel for="documento" value="Documento de sustento (PDF, JPG o PNG, máx. 5 MB)" styleClass="form-label"/>
+                                            <h:inputFile id="documento" value="#{asistenciaBean.documento}"
+                                                         validator="#{asistenciaBean.validarArchivo}"
+                                                         styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
+                                                         pt:accept=".pdf,.jpg,.jpeg,.png"/>
+                                            <h:message for="documento" styleClass="invalid-feedback"/>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+
+                                <h:commandButton value="Registrar asistencia" action="#{asistenciaBean.registrar}"
+                                                 styleClass="btn btn-primary w-100 py-2"/>
+                            </h:form>
+                        </div>
+                    </div>
+                    <p class="text-center mt-3 mb-0">
+                        <h:link outcome="listado" value="Ver listado de asistencias" styleClass="small"/>
+                    </p>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,5 @@
+target/
+nbproject/private/
+*.war
+# db.properties SÍ se sube al repositorio (credenciales de desarrollo local) para que el proyecto
+# funcione al clonarlo. En el proyecto final conviene moverlo a variables de entorno.

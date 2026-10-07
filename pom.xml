@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.utp</groupId>
+    <artifactId>HospitalAsistenciaApp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>HospitalAsistenciaApp-1.0-SNAPSHOT</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+    </properties>
+
+    <dependencies>
+        <!-- Servlet API: lo provee Tomcat 11 (Servlet 6.1) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jakarta Faces (Mojarra): API + implementación. Tomcat NO la incluye -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.faces</artifactId>
+            <version>4.1.6</version>
+        </dependency>
+
+        <!-- CDI para Tomcat (necesario para @Named, @RequestScoped, @SessionScoped, @Inject) -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet-shaded</artifactId>
+            <version>6.0.4.Final</version>
+        </dependency>
+
+        <!-- JSTL: lo requiere Mojarra en contenedores de servlets -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- APIs solo para compilar (en ejecución las aporta Weld/Tomcat) -->
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>2.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Driver MySQL (APF1) -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>HospitalAsistenciaApp</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>

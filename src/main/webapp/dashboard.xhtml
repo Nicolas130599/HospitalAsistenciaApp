@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets">
+
+    <ui:composition template="/WEB-INF/templates/plantilla.xhtml">
+
+        <ui:define name="titulo">Dashboard</ui:define>
+
+        <ui:define name="contenido">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                <div>
+                    <h1 class="h3 fw-bold text-hospital mb-1">Panel de control</h1>
+                    <p class="text-suave mb-0">
+                        Bienvenido/a, <h:outputText value="#{loginBean.usuario.username}"/>. Este es el resumen de asistencias registradas.
+                    </p>
+                </div>
+                <h:link outcome="registro" styleClass="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Registrar asistencia
+                </h:link>
+            </div>
+
+            <!-- Indicadores: EL enlaza cada número con una propiedad del bean -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="indicador p-3 h-100">
+                        <div class="small text-suave">Asistencias registradas</div>
+                        <div class="valor">#{dashboardBean.total}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="indicador p-3 h-100">
+                        <div class="small text-suave">Registradas hoy</div>
+                        <div class="valor">#{dashboardBean.hoy}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="indicador indicador-permiso p-3 h-100">
+                        <div class="small text-suave">Permisos otorgados</div>
+                        <div class="valor">#{dashboardBean.permisos}</div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="indicador indicador-turno p-3 h-100">
+                        <div class="small text-suave">Personal activo</div>
+                        <div class="valor">#{dashboardBean.personalActivo}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card card-hospital h-100">
+                        <div class="card-body">
+                            <h2 class="h6 fw-semibold mb-3">Asistencias por estado</h2>
+                            <h:panelGroup rendered="#{empty dashboardBean.porEstado}" layout="block" styleClass="text-suave small">
+                                Sin datos todavía.
+                            </h:panelGroup>
+                            <ui:repeat value="#{dashboardBean.porEstado}" var="e">
+                                <div class="d-flex justify-content-between border-bottom py-1">
+                                    <span>#{e.etiqueta}</span><strong>#{e.valor}</strong>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card card-hospital h-100">
+                        <div class="card-body">
+                            <h2 class="h6 fw-semibold mb-3">Asistencias por turno</h2>
+                            <h:panelGroup rendered="#{empty dashboardBean.porTurno}" layout="block" styleClass="text-suave small">
+                                Sin datos todavía.
+                            </h:panelGroup>
+                            <ui:repeat value="#{dashboardBean.porTurno}" var="t">
+                                <div class="d-flex justify-content-between border-bottom py-1">
+                                    <span>#{t.etiqueta}</span><strong>#{t.valor}</strong>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-hospital">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 fw-semibold mb-0">Últimos registros</h2>
+                        <h:link outcome="listado" styleClass="btn btn-outline-primary btn-sm">Ver todos</h:link>
+                    </div>
+
+                    <h:panelGroup rendered="#{empty dashboardBean.ultimos}" layout="block" styleClass="text-center text-suave py-4">
+                        Aún no hay asistencias registradas. Usa el botón "Registrar asistencia" para agregar la primera.
+                    </h:panelGroup>
+
+                    <h:panelGroup layout="block" rendered="#{not empty dashboardBean.ultimos}" styleClass="table-responsive">
+                        <h:dataTable value="#{dashboardBean.ultimos}" var="r"
+                                     styleClass="table table-hover align-middle mb-0">
+                            <h:column>
+                                <f:facet name="header">DNI</f:facet>
+                                <h:outputText value="#{r.dni}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Colaborador</f:facet>
+                                <h:outputText value="#{r.nombre}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Cargo</f:facet>
+                                <h:outputText value="#{r.cargo}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Turno</f:facet>
+                                <h:outputText value="#{r.turno}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Estado</f:facet>
+                                <h:outputText value="#{r.estado}" styleClass="badge text-bg-#{r.claseEstado}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Permiso</f:facet>
+                                <h:outputText value="#{r.conPermiso ? r.tipoPermiso : 'Sin permiso'}"/>
+                            </h:column>
+                            <h:column>
+                                <f:facet name="header">Fecha</f:facet>
+                                <h:outputText value="#{r.fechaFormateada} #{r.horaEntradaFormateada}"/>
+                            </h:column>
+                        </h:dataTable>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:pt="jakarta.faces.passthrough">
+
+    <ui:composition template="/WEB-INF/templates/plantilla.xhtml">
+
+        <ui:define name="titulo">Listado de asistencias</ui:define>
+
+        <ui:define name="contenido">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h1 class="h3 fw-bold text-hospital mb-1">Listado de asistencias</h1>
+                    <p class="text-suave mb-0">Filtra por colaborador, cargo, turno, estado, permiso y fechas. Los filtros se combinan entre sí.</p>
+                </div>
+                <h:link outcome="registro" styleClass="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Registrar asistencia
+                </h:link>
+            </div>
+
+            <h:form id="formListado">
+                <!-- Filtros: todos se aplican a la vez (AND) en la consulta SQL -->
+                <div class="card card-hospital mb-3">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <h:outputLabel for="fPersonal" value="Colaborador" styleClass="form-label"/>
+                                <h:selectOneMenu id="fPersonal" value="#{listadoBean.filtro.idPersonal}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos los colaboradores" noSelectionOption="true"/>
+                                    <f:selectItems value="#{listadoBean.personal}" var="p"
+                                                   itemValue="#{p.idPersonal}" itemLabel="#{p.etiqueta}"/>
+                                </h:selectOneMenu>
+                            </div>
+                            <div class="col-md-4">
+                                <h:outputLabel for="fTexto" value="Buscar por DNI o nombre" styleClass="form-label"/>
+                                <h:inputText id="fTexto" value="#{listadoBean.filtro.texto}" styleClass="form-control"
+                                             pt:placeholder="Ej. 7482 o Mendoza" pt:autocomplete="off"/>
+                            </div>
+                            <div class="col-md-4">
+                                <h:outputLabel for="fCargo" value="Cargo" styleClass="form-label"/>
+                                <h:selectOneMenu id="fCargo" value="#{listadoBean.filtro.cargo}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos los cargos" noSelectionOption="true"/>
+                                    <f:selectItems value="#{listadoBean.cargos}"/>
+                                </h:selectOneMenu>
+                            </div>
+
+                            <div class="col-md-3">
+                                <h:outputLabel for="fTurno" value="Turno" styleClass="form-label"/>
+                                <h:selectOneMenu id="fTurno" value="#{listadoBean.filtro.turno}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos los turnos" noSelectionOption="true"/>
+                                    <f:selectItems value="#{listadoBean.turnos}" var="t"
+                                                   itemValue="#{t.nombre}" itemLabel="#{t.etiqueta}"/>
+                                </h:selectOneMenu>
+                            </div>
+                            <div class="col-md-3">
+                                <h:outputLabel for="fEstado" value="Estado" styleClass="form-label"/>
+                                <h:selectOneMenu id="fEstado" value="#{listadoBean.filtro.estado}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos los estados" noSelectionOption="true"/>
+                                    <f:selectItems value="#{listadoBean.estados}"/>
+                                </h:selectOneMenu>
+                            </div>
+                            <div class="col-md-3">
+                                <h:outputLabel for="fPermiso" value="Permiso" styleClass="form-label"/>
+                                <h:selectOneMenu id="fPermiso" value="#{listadoBean.filtro.permiso}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos" noSelectionOption="true"/>
+                                    <f:selectItem itemValue="Si" itemLabel="Con permiso"/>
+                                    <f:selectItem itemValue="No" itemLabel="Sin permiso"/>
+                                </h:selectOneMenu>
+                            </div>
+                            <div class="col-md-3">
+                                <h:outputLabel for="fTipo" value="Tipo de permiso" styleClass="form-label"/>
+                                <h:selectOneMenu id="fTipo" value="#{listadoBean.filtro.tipoPermiso}" styleClass="form-select">
+                                    <f:selectItem itemLabel="Todos los tipos" noSelectionOption="true"/>
+                                    <f:selectItems value="#{listadoBean.tiposPermiso}" var="tp"
+                                                   itemValue="#{tp.nombre}" itemLabel="#{tp.nombre}"/>
+                                </h:selectOneMenu>
+                            </div>
+
+                            <div class="col-md-3">
+                                <h:outputLabel for="fDesde" value="Desde" styleClass="form-label"/>
+                                <h:inputText id="fDesde" value="#{listadoBean.desdeTexto}" styleClass="form-control" pt:type="date"/>
+                            </div>
+                            <div class="col-md-3">
+                                <h:outputLabel for="fHasta" value="Hasta" styleClass="form-label"/>
+                                <h:inputText id="fHasta" value="#{listadoBean.hastaTexto}" styleClass="form-control" pt:type="date"/>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end justify-content-md-end gap-2">
+                                <h:commandButton value="Buscar" action="#{listadoBean.buscar}" styleClass="btn btn-primary px-4">
+                                    <f:ajax execute="@form" render="panelTabla :msgs"/>
+                                </h:commandButton>
+                                <h:commandButton value="Limpiar" action="#{listadoBean.limpiar}" styleClass="btn btn-outline-secondary px-4">
+                                    <f:ajax execute="@this" render="@form :msgs" resetValues="true"/>
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de datos + paginación (se actualiza por AJAX) -->
+                <h:panelGroup id="panelTabla" layout="block" styleClass="card card-hospital">
+                    <div class="card-body">
+
+                        <h:panelGroup layout="block" rendered="#{empty listadoBean.registros}" styleClass="text-center text-suave py-5">
+                            No se encontraron registros con esos filtros.
+                        </h:panelGroup>
+
+                        <h:panelGroup layout="block" rendered="#{not empty listadoBean.registros}" styleClass="table-responsive">
+                            <h:dataTable value="#{listadoBean.registros}" var="r"
+                                         styleClass="table table-hover align-middle mb-0">
+                                <h:column>
+                                    <f:facet name="header">N.°</f:facet>
+                                    <h:outputText value="#{r.idAsistencia}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">DNI</f:facet>
+                                    <h:outputText value="#{r.dni}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Colaborador</f:facet>
+                                    <h:outputText value="#{r.nombre}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Cargo</f:facet>
+                                    <h:outputText value="#{r.cargo}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Turno</f:facet>
+                                    <h:outputText value="#{r.turno}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Fecha</f:facet>
+                                    <h:outputText value="#{r.fechaFormateada}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Entrada</f:facet>
+                                    <h:outputText value="#{r.horaEntradaFormateada}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Estado</f:facet>
+                                    <h:outputText value="#{r.estado}" styleClass="badge text-bg-#{r.claseEstado}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Permiso</f:facet>
+                                    <h:outputText value="#{r.permisoTexto}"
+                                                  styleClass="badge text-bg-#{r.conPermiso ? 'success' : 'secondary'}"/>
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Acciones</f:facet>
+                                    <!-- El modal se abre con Bootstrap; los datos viajan en atributos data-* -->
+                                    <h:outputLink value="#" styleClass="btn btn-sm btn-outline-primary me-1"
+                                                  pt:data-bs-toggle="modal" pt:data-bs-target="#modalDetalle"
+                                                  pt:data-nombre="#{r.nombre}" pt:data-dni="#{r.dni}"
+                                                  pt:data-cargo="#{r.cargo}" pt:data-turno="#{r.turno}"
+                                                  pt:data-fecha="#{r.fechaFormateada}"
+                                                  pt:data-entrada="#{r.horaEntradaFormateada}"
+                                                  pt:data-salida="#{r.horaSalidaFormateada}"
+                                                  pt:data-estado="#{r.estado}" pt:data-permiso="#{r.permisoTexto}"
+                                                  pt:data-tipo="#{r.tipoPermiso}" pt:data-periodo="#{r.periodoPermiso}"
+                                                  pt:data-dias="#{r.conPermiso ? r.dias : ''}"
+                                                  pt:data-obs="#{r.observacion}" pt:data-archivo="#{r.documento}">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </h:outputLink>
+                                    <h:commandButton value="Eliminar" rendered="#{loginBean.admin}"
+                                                     action="#{listadoBean.eliminar(r.idAsistencia)}"
+                                                     styleClass="btn btn-sm btn-outline-danger"
+                                                     onclick="if (!confirm('¿Eliminar este registro?')) return false;">
+                                        <f:ajax render="panelTabla :msgs"/>
+                                    </h:commandButton>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
+
+                        <!-- Paginación -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+                            <span class="small text-suave">
+                                Mostrando #{listadoBean.desde} a #{listadoBean.hasta} de #{listadoBean.totalRegistros} registros
+                            </span>
+                            <div class="d-flex align-items-center gap-2">
+                                <h:selectOneMenu value="#{listadoBean.tamanoPagina}" styleClass="form-select form-select-sm w-auto">
+                                    <f:selectItem itemValue="5" itemLabel="5 por página"/>
+                                    <f:selectItem itemValue="10" itemLabel="10 por página"/>
+                                    <f:selectItem itemValue="20" itemLabel="20 por página"/>
+                                    <f:ajax listener="#{listadoBean.cambiarTamano}" execute="@this" render="panelTabla"/>
+                                </h:selectOneMenu>
+                                <h:commandButton value="Anterior" action="#{listadoBean.anterior}"
+                                                 disabled="#{listadoBean.pagina le 1}"
+                                                 styleClass="btn btn-sm btn-outline-primary">
+                                    <f:ajax render="panelTabla"/>
+                                </h:commandButton>
+                                <span class="small">Página #{listadoBean.pagina} de #{listadoBean.totalPaginas}</span>
+                                <h:commandButton value="Siguiente" action="#{listadoBean.siguiente}"
+                                                 disabled="#{listadoBean.pagina ge listadoBean.totalPaginas}"
+                                                 styleClass="btn btn-sm btn-outline-primary">
+                                    <f:ajax render="panelTabla"/>
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:form>
+
+            <!-- Modal de detalle (Bootstrap) -->
+            <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="tituloDetalle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title h5 text-hospital" id="tituloDetalle">Detalle del registro</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <dl class="row mb-0">
+                                <dt class="col-5">Colaborador</dt><dd class="col-7" id="d-nombre"></dd>
+                                <dt class="col-5">DNI</dt><dd class="col-7" id="d-dni"></dd>
+                                <dt class="col-5">Cargo</dt><dd class="col-7" id="d-cargo"></dd>
+                                <dt class="col-5">Turno</dt><dd class="col-7" id="d-turno"></dd>
+                                <dt class="col-5">Fecha</dt><dd class="col-7" id="d-fecha"></dd>
+                                <dt class="col-5">Hora de entrada</dt><dd class="col-7" id="d-entrada"></dd>
+                                <dt class="col-5">Hora de salida</dt><dd class="col-7" id="d-salida"></dd>
+                                <dt class="col-5">Estado</dt><dd class="col-7" id="d-estado"></dd>
+                                <dt class="col-5">Permiso</dt><dd class="col-7" id="d-permiso"></dd>
+                                <dt class="col-5">Tipo de permiso</dt><dd class="col-7" id="d-tipo"></dd>
+                                <dt class="col-5">Periodo</dt><dd class="col-7" id="d-periodo"></dd>
+                                <dt class="col-5">Días</dt><dd class="col-7" id="d-dias"></dd>
+                                <dt class="col-5">Observación</dt><dd class="col-7" id="d-obs"></dd>
+                                <dt class="col-5">Archivo adjunto</dt><dd class="col-7" id="d-archivo"></dd>
+                            </dl>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                //<![CDATA[
+                document.getElementById('modalDetalle').addEventListener('show.bs.modal', function (ev) {
+                    var datos = ev.relatedTarget.dataset;
+                    ['nombre', 'dni', 'cargo', 'turno', 'fecha', 'entrada', 'salida', 'estado', 'permiso',
+                        'tipo', 'periodo', 'dias', 'obs', 'archivo'].forEach(function (k) {
+                        document.getElementById('d-' + k).textContent = datos[k] ? datos[k] : '-';
+                    });
+                });
+                //]]>
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>

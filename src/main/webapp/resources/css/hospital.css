@@ -1,0 +1,104 @@
+/* Hospital San Gabriel - estilos sobre Bootstrap 5
+   Mantiene la identidad verde del APF1 (#0a5c53) y ajusta Bootstrap con variables. */
+
+:root {
+    --hg-verde: #0a5c53;
+    --hg-verde-oscuro: #07463f;
+    --hg-verde-suave: #f0f7f5;
+    --hg-fondo: #eef4f2;
+    --hg-borde: #d2e3e0;
+    --hg-texto: #2f3e46;
+    --hg-texto-suave: #527970;
+
+    --bs-primary: var(--hg-verde);
+    --bs-primary-rgb: 10, 92, 83;
+    --bs-link-color: var(--hg-verde);
+    --bs-link-hover-color: var(--hg-verde-oscuro);
+    --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bs-body-color: var(--hg-texto);
+}
+
+body.bg-hospital {
+    background-color: var(--hg-fondo);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+body.bg-hospital > .container { flex: 1 0 auto; }
+
+/* Botones */
+.btn-primary {
+    --bs-btn-bg: var(--hg-verde);
+    --bs-btn-border-color: var(--hg-verde);
+    --bs-btn-hover-bg: var(--hg-verde-oscuro);
+    --bs-btn-hover-border-color: var(--hg-verde-oscuro);
+    --bs-btn-active-bg: var(--hg-verde-oscuro);
+    --bs-btn-active-border-color: var(--hg-verde-oscuro);
+    --bs-btn-disabled-bg: #94b0a9;
+    --bs-btn-disabled-border-color: #94b0a9;
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--hg-verde);
+    --bs-btn-border-color: var(--hg-verde);
+    --bs-btn-hover-bg: var(--hg-verde);
+    --bs-btn-hover-border-color: var(--hg-verde);
+    --bs-btn-active-bg: var(--hg-verde-oscuro);
+    --bs-btn-active-border-color: var(--hg-verde-oscuro);
+}
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+    border-color: var(--hg-verde);
+    box-shadow: 0 0 0 .22rem rgba(10, 92, 83, .15);
+}
+.form-check-input:checked {
+    background-color: var(--hg-verde);
+    border-color: var(--hg-verde);
+}
+
+/* Barra de navegación */
+.navbar-hospital { background: linear-gradient(90deg, var(--hg-verde-oscuro), var(--hg-verde)); }
+.navbar-hospital .nav-link { color: rgba(255, 255, 255, .8); border-radius: .5rem; padding: .45rem .8rem; }
+.navbar-hospital .nav-link:hover { color: #fff; background: rgba(255, 255, 255, .1); }
+.navbar-hospital .nav-link.active { color: #fff; background: rgba(255, 255, 255, .18); font-weight: 600; }
+.brand-logo {
+    width: 38px; height: 38px; object-fit: contain;
+    background: #fff; border-radius: 50%; padding: 2px;
+}
+
+/* Tarjetas */
+.card-hospital {
+    border: 1px solid var(--hg-borde);
+    border-radius: 1rem;
+    box-shadow: 0 8px 28px rgba(10, 92, 83, .08);
+}
+.text-hospital { color: var(--hg-verde); }
+.text-suave { color: var(--hg-texto-suave); }
+
+/* Indicadores del dashboard */
+.indicador { border: 1px solid var(--hg-borde); border-left: 5px solid var(--hg-verde); border-radius: .75rem; background: #fff; }
+.indicador .valor { font-size: 2.1rem; font-weight: 700; line-height: 1.1; color: var(--hg-verde); }
+.indicador-turno { border-left-color: #d49b1f; }
+.indicador-permiso { border-left-color: #2c7a9b; }
+
+/* Formularios */
+.permiso-switch { background: var(--hg-verde-suave); border-left: 4px solid var(--hg-verde); border-radius: .5rem; }
+.invalid-feedback { font-size: .8rem; }
+
+/* Tablas */
+.table > thead th { color: var(--hg-texto-suave); font-weight: 600; font-size: .85rem; border-bottom: 2px solid var(--hg-borde); white-space: nowrap; }
+.table > tbody td { vertical-align: middle; }
+
+/* Alertas flotantes */
+.alertas-flotantes { z-index: 1090; max-width: 380px; }
+.alertas-flotantes ul { margin: 0; padding: 0; }
+
+/* Pantalla de login */
+body.login-bg {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 20% 15%, #d9ebe7 0, transparent 45%), var(--hg-fondo);
+}
+.login-card { width: 100%; max-width: 420px; }
+.login-logo {
+    width: 92px; height: 92px; object-fit: contain; background: #fff;
+    border-radius: 50%; padding: 4px; box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+}
