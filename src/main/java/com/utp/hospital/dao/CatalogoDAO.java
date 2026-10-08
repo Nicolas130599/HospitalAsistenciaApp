@@ -11,13 +11,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Listas de apoyo para los formularios y filtros: turnos, tipos de permiso y cargos. */
 @ApplicationScoped
 public class CatalogoDAO {
 
     public List<Turno> listarTurnos() throws SQLException {
         List<Turno> lista = new ArrayList<>();
-        // MIN(id_turno) agrupa por nombre, así un script ejecutado dos veces no duplica opciones.
         String sql = "SELECT MIN(id_turno) AS id_turno, nombre, MIN(hora_inicio) AS hora_inicio, "
                 + "MIN(hora_fin) AS hora_fin FROM turno GROUP BY nombre ORDER BY MIN(id_turno)";
         try (Connection con = Conexion.getConnection();
@@ -44,7 +42,6 @@ public class CatalogoDAO {
         return lista;
     }
 
-    /** Cargos que existen realmente en la tabla personal (para el filtro del listado). */
     public List<String> listarCargos() throws SQLException {
         List<String> lista = new ArrayList<>();
         try (Connection con = Conexion.getConnection();

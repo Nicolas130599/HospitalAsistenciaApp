@@ -2,7 +2,6 @@ package com.utp.hospital.model;
 
 import java.io.Serializable;
 
-/** DTO del usuario autenticado (tabla usuario). */
 public class Usuario implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,7 +19,6 @@ public class Usuario implements Serializable {
         this.rol = rol;
     }
 
-    /** Solo el rol ADMINISTRADOR puede eliminar registros. */
     public boolean isAdmin() {
         return "ADMINISTRADOR".equalsIgnoreCase(rol);
     }

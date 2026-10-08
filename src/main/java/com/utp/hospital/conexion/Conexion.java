@@ -7,10 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Fábrica de conexiones JDBC. Lee url, usuario y contraseña de db.properties,
- * de modo que las credenciales ya no están escritas dentro del código.
- */
+
 public final class Conexion {
 
     private static final Properties PROPS = new Properties();
@@ -28,7 +25,6 @@ public final class Conexion {
     private Conexion() {
     }
 
-    /** Abre una conexión nueva. Quien la reciba debe cerrarla (try-with-resources). */
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

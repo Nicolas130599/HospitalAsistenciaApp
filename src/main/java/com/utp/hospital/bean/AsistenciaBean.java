@@ -33,12 +33,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Managed Bean del formulario de registro de asistencia.
- * Alcance @ViewScoped: conserva los datos mientras el usuario permanece en
- * registro.xhtml (necesario porque hay peticiones AJAX: buscar DNI y mostrar el permiso).
- * EL en la vista: #{asistenciaBean.dni}, #{asistenciaBean.registrar}.
- */
+
 @Named("asistenciaBean")
 @ViewScoped
 public class AsistenciaBean implements Serializable {
@@ -70,9 +65,8 @@ public class AsistenciaBean implements Serializable {
     private Integer idTipoPermiso;
     private Integer diasPermiso = 1;
     private String motivo;
-    private transient Part documento; // Part no es serializable
+    private transient Part documento;
 
-    /** Carga los catálogos y preselecciona el turno que corresponde a la hora actual. */
     @PostConstruct
     public void init() {
         try {
@@ -97,10 +91,7 @@ public class AsistenciaBean implements Serializable {
         }
     }
 
-    /**
-     * Listener AJAX del campo DNI: si el colaborador ya existe, completa nombre, cargo y turno
-     * y bloquea esos campos; si no existe, se podrá registrar como colaborador nuevo.
-     */
+
     public void buscarPersonal() {
         personalExistente = false;
         if (dni == null || !dni.matches("\\d{8}")) {
@@ -122,7 +113,6 @@ public class AsistenciaBean implements Serializable {
         }
     }
 
-    /** Valida el archivo adjunto: máximo 5 MB y solo PDF, JPG o PNG. */
     public void validarArchivo(FacesContext ctx, UIComponent componente, Object valor) {
         Part part = (Part) valor;
         if (part == null || part.getSize() == 0) {
@@ -138,7 +128,6 @@ public class AsistenciaBean implements Serializable {
         }
     }
 
-    /** Acción del botón "Registrar asistencia". */
     public String registrar() {
         FacesContext fc = FacesContext.getCurrentInstance();
         String rutaGuardada = null;
@@ -160,7 +149,6 @@ public class AsistenciaBean implements Serializable {
             }
             String estado = asistenciaDAO.registrar(s);
 
-            // Mantiene el mensaje después de la redirección (que además limpia el formulario).
             fc.getExternalContext().getFlash().setKeepMessages(true);
             mensaje(FacesMessage.SEVERITY_INFO, "Asistencia registrada: " + s.getNombre() + " (" + estado + ")");
             return "registro?faces-redirect=true";
@@ -181,7 +169,6 @@ public class AsistenciaBean implements Serializable {
                 .replaceAll("[^A-Za-z0-9._-]", "_");
     }
 
-    /** Guarda el adjunto en ~/hospital_uploads y devuelve la ruta completa donde quedó. */
     private String guardarArchivo(Part part, String original) throws IOException {
         Path carpeta = Paths.get(System.getProperty("user.home"), "hospital_uploads");
         Files.createDirectories(carpeta);
@@ -193,7 +180,6 @@ public class AsistenciaBean implements Serializable {
         return destino.toString();
     }
 
-    /** Si la base de datos rechazó el registro, no dejamos el adjunto huérfano en disco. */
     private void borrarArchivo(String ruta) {
         if (ruta == null) {
             return;

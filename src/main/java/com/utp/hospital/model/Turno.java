@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-/** DTO de la tabla turno. */
 public class Turno implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -25,12 +24,10 @@ public class Turno implements Serializable {
         this.horaFin = horaFin;
     }
 
-    /** Texto para listas desplegables, por ejemplo: "Mañana (08:00 - 16:00)". */
     public String getEtiqueta() {
         return nombre + " (" + horaInicio.format(HM) + " - " + horaFin.format(HM) + ")";
     }
 
-    /** Indica si la hora dada cae dentro del turno (soporta turnos que cruzan la medianoche). */
     public boolean contiene(LocalTime hora) {
         if (horaInicio.isBefore(horaFin)) {
             return !hora.isBefore(horaInicio) && hora.isBefore(horaFin);

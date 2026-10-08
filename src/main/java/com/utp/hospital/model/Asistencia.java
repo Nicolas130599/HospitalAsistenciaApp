@@ -5,10 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Fila del listado: une asistencia + personal + turno + permiso + documento
- * (mismas columnas que la vista vista_asistencias, más cargo y fechas del permiso).
- */
+
 public class Asistencia implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -56,7 +53,6 @@ public class Asistencia implements Serializable {
         return permisoDesde.format(FECHA) + " al " + permisoHasta.format(FECHA);
     }
 
-    /** Color de la insignia Bootstrap según el estado. */
     public String getClaseEstado() {
         if ("Puntual".equals(estado)) {
             return "success";

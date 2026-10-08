@@ -24,10 +24,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Bean del listado (&lt;h:dataTable&gt;) con filtros combinados y paginación.
- * @ViewScoped: conserva filtros y página actual entre las llamadas AJAX.
- */
 @Named("listadoBean")
 @ViewScoped
 public class ListadoBean implements Serializable {
@@ -43,18 +39,15 @@ public class ListadoBean implements Serializable {
     @Inject
     private CatalogoDAO catalogoDAO;
 
-    // Filtros activos (se combinan con AND en la consulta)
     private FiltroAsistencia filtro = new FiltroAsistencia();
     private String desdeTexto;   // yyyy-MM-dd, tal como lo envía <input type="date">
     private String hastaTexto;
 
-    // Listas de apoyo para los desplegables
     private List<Personal> personal = new ArrayList<>();
     private List<String> cargos = new ArrayList<>();
     private List<Turno> turnos = new ArrayList<>();
     private List<TipoPermiso> tiposPermiso = new ArrayList<>();
 
-    // Resultados y paginación
     private int pagina = 1;
     private int tamanoPagina = 5;
     private int totalRegistros;
@@ -74,7 +67,6 @@ public class ListadoBean implements Serializable {
         cargar();
     }
 
-    /** Aplica TODOS los filtros desde la primera página. */
     public void buscar() {
         try {
             LocalDate desde = parsear(desdeTexto);
@@ -93,7 +85,6 @@ public class ListadoBean implements Serializable {
         cargar();
     }
 
-    /** Al cambiar "registros por página" se vuelve a la primera página con los mismos filtros. */
     public void cambiarTamano() {
         pagina = 1;
         cargar();
@@ -121,7 +112,6 @@ public class ListadoBean implements Serializable {
         }
     }
 
-    /** Solo el rol ADMINISTRADOR puede eliminar; se valida en el servidor, no solo ocultando el botón. */
     public void eliminar(int idAsistencia) {
         FacesContext fc = FacesContext.getCurrentInstance();
         Object u = fc.getExternalContext().getSessionMap().get(LoginBean.SESION_USUARIO);

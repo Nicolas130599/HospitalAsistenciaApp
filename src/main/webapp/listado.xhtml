@@ -22,7 +22,6 @@
             </div>
 
             <h:form id="formListado">
-                <!-- Filtros: todos se aplican a la vez (AND) en la consulta SQL -->
                 <div class="card card-hospital mb-3">
                     <div class="card-body">
                         <div class="row g-3">
@@ -99,7 +98,6 @@
                     </div>
                 </div>
 
-                <!-- Tabla de datos + paginación (se actualiza por AJAX) -->
                 <h:panelGroup id="panelTabla" layout="block" styleClass="card card-hospital">
                     <div class="card-body">
 
@@ -149,7 +147,6 @@
                                 </h:column>
                                 <h:column>
                                     <f:facet name="header">Acciones</f:facet>
-                                    <!-- El modal se abre con Bootstrap; los datos viajan en atributos data-* -->
                                     <h:outputLink value="#" styleClass="btn btn-sm btn-outline-primary me-1"
                                                   pt:data-bs-toggle="modal" pt:data-bs-target="#modalDetalle"
                                                   pt:data-nombre="#{r.nombre}" pt:data-dni="#{r.dni}"
@@ -173,7 +170,6 @@
                             </h:dataTable>
                         </h:panelGroup>
 
-                        <!-- Paginación -->
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
                             <span class="small text-suave">
                                 Mostrando #{listadoBean.desde} a #{listadoBean.hasta} de #{listadoBean.totalRegistros} registros
@@ -202,7 +198,6 @@
                 </h:panelGroup>
             </h:form>
 
-            <!-- Modal de detalle (Bootstrap) -->
             <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="tituloDetalle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">

@@ -19,17 +19,12 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Acceso a datos de asistencias: listado con filtros combinados, conteos del dashboard,
- * eliminación y registro transaccional (personal + asistencia + permiso + documento).
- */
+
 @ApplicationScoped
 public class AsistenciaDAO {
 
     private static final ZoneId LIMA = ZoneId.of("America/Lima");
-    /** Minutos de gracia después de la hora de inicio del turno. */
     private static final int TOLERANCIA_MIN = 10;
-    /** Pasada esta ventana (8 h) ya no se considera una entrada tardía del mismo turno. */
     private static final int VENTANA_TARDANZA_MIN = 480;
 
     private static final String SELECT
@@ -46,11 +41,7 @@ public class AsistenciaDAO {
             + "LEFT JOIN tipo_permiso tp ON tp.id_tipo = p.id_tipo "
             + "LEFT JOIN documento doc ON doc.id_permiso = p.id_permiso ";
 
-    // ------------------------------------------------------------------
-    // Listado con filtros
-    // ------------------------------------------------------------------
 
-    /** Devuelve una página de resultados que cumple TODOS los filtros activos. */
     public List<Asistencia> listar(FiltroAsistencia filtro, int offset, int limit) throws SQLException {
         List<Object> params = new ArrayList<>();
         String sql = SELECT + FROM + where(filtro, params)
@@ -70,7 +61,6 @@ public class AsistenciaDAO {
         return lista;
     }
 
-    /** Cuenta con los mismos JOIN y filtros que listar(), para que la paginación sea exacta. */
     public int contar(FiltroAsistencia filtro) throws SQLException {
         List<Object> params = new ArrayList<>();
         String sql = "SELECT COUNT(*) " + FROM + where(filtro, params);
@@ -83,7 +73,6 @@ public class AsistenciaDAO {
         }
     }
 
-    /** Construye el WHERE: cada filtro presente agrega una condición AND con su parámetro. */
     private String where(FiltroAsistencia f, List<Object> params) {
         StringBuilder sb = new StringBuilder("WHERE 1 = 1 ");
         if (f == null) {
@@ -135,7 +124,6 @@ public class AsistenciaDAO {
         return s != null && !s.isBlank();
     }
 
-    /** Asigna los parámetros en orden y devuelve el siguiente índice libre. */
     private int bind(PreparedStatement ps, List<Object> params) throws SQLException {
         int i = 1;
         for (Object p : params) {
@@ -172,11 +160,7 @@ public class AsistenciaDAO {
         return a;
     }
 
-    // ------------------------------------------------------------------
-    // Eliminar
-    // ------------------------------------------------------------------
 
-    /** Elimina la asistencia; sus permisos y documentos se borran por ON DELETE CASCADE. */
     public void eliminar(int idAsistencia) throws SQLException {
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement("DELETE FROM asistencia WHERE id_asistencia = ?")) {
@@ -185,17 +169,7 @@ public class AsistenciaDAO {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Registro (transacción)
-    // ------------------------------------------------------------------
 
-    /**
-     * Registra la asistencia de hoy. Si el DNI no existe crea al colaborador en personal.
-     * Si pidió permiso, crea también el permiso (y el documento adjunto).
-     * Todo ocurre en una transacción: o se guarda completo o no se guarda nada.
-     *
-     * @return el estado calculado (Puntual, Tardanza o Permiso)
-     */
     public String registrar(SolicitudRegistro s) throws SQLException, NegocioException {
         LocalDate hoy = LocalDate.now(LIMA);
         LocalTime ahora = LocalTime.now(LIMA).withNano(0);
@@ -331,10 +305,7 @@ public class AsistenciaDAO {
         throw new SQLException("La base de datos no devolvió el id generado");
     }
 
-    /**
-     * Puntual si entra hasta TOLERANCIA_MIN minutos después del inicio del turno (o antes);
-     * Tardanza si llega más tarde dentro de la ventana del turno. Maneja turnos nocturnos.
-     */
+
     static String calcularEstado(LocalTime ahora, LocalTime inicioTurno) {
         if (inicioTurno == null) {
             return "Puntual";
@@ -343,9 +314,6 @@ public class AsistenciaDAO {
         return (minutos > TOLERANCIA_MIN && minutos < VENTANA_TARDANZA_MIN) ? "Tardanza" : "Puntual";
     }
 
-    // ------------------------------------------------------------------
-    // Indicadores del dashboard
-    // ------------------------------------------------------------------
 
     public int contarTotal() throws SQLException {
         return escalar("SELECT COUNT(*) FROM asistencia", null);
@@ -363,7 +331,6 @@ public class AsistenciaDAO {
         return escalar("SELECT COUNT(*) FROM personal WHERE activo = TRUE", null);
     }
 
-    /** Asistencias acumuladas por turno (según el turno asignado al colaborador). */
     public List<Indicador> contarPorTurno() throws SQLException {
         return agrupar("SELECT t.nombre, COUNT(a.id_asistencia) FROM turno t "
                 + "LEFT JOIN personal per ON per.id_turno = t.id_turno "

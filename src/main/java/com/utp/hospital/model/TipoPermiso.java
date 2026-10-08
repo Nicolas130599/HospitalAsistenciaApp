@@ -2,7 +2,6 @@ package com.utp.hospital.model;
 
 import java.io.Serializable;
 
-/** DTO de la tabla tipo_permiso. */
 public class TipoPermiso implements Serializable {
 
     private static final long serialVersionUID = 1L;

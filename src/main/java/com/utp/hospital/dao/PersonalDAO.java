@@ -11,13 +11,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Acceso a la tabla personal. */
 @ApplicationScoped
 public class PersonalDAO {
 
     private static final String COLUMNAS = "SELECT id_personal, dni, nombre, cargo, id_turno FROM personal";
 
-    /** Busca un colaborador por DNI exacto; null si no existe. */
     public Personal buscarPorDni(String dni) throws SQLException {
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(COLUMNAS + " WHERE dni = ?")) {
@@ -28,7 +26,6 @@ public class PersonalDAO {
         }
     }
 
-    /** Colaboradores activos ordenados por nombre (lista "Colaborador" del filtro). */
     public List<Personal> listarActivos() throws SQLException {
         List<Personal> lista = new ArrayList<>();
         try (Connection con = Conexion.getConnection();

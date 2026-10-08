@@ -14,10 +14,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Managed Bean de autenticación (@SessionScoped: vive mientras dure la sesión).
- * Vista asociada: login.xhtml.  EL: #{loginBean.username}, #{loginBean.login}.
- */
+
 @Named("loginBean")
 @SessionScoped
 public class LoginBean implements Serializable {
@@ -25,7 +22,6 @@ public class LoginBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(LoginBean.class.getName());
 
-    /** Atributo de HttpSession que consulta el AuthFilter. */
     public static final String SESION_USUARIO = "usuario";
 
     @Inject
@@ -35,7 +31,6 @@ public class LoginBean implements Serializable {
     private String password;
     private Usuario usuario;
 
-    /** Acción del botón "Ingresar". Devuelve el outcome que resuelve faces-config.xml. */
     public String login() {
         FacesContext fc = FacesContext.getCurrentInstance();
         try {

@@ -12,19 +12,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HexFormat;
 
-/** Acceso a la tabla usuario (JDBC puro, consultas parametrizadas). */
 @ApplicationScoped
 public class UsuarioDAO {
 
     private static final String SQL_POR_USERNAME
             = "SELECT id_usuario, username, password, rol FROM usuario WHERE username = ?";
 
-    /**
-     * Devuelve el usuario si las credenciales son correctas; null en caso contrario.
-     * La columna password acepta texto plano (como en el script actual) o un hash
-     * SHA-256 en hexadecimal, lo que permite migrar a contraseñas cifradas sin cambiar la tabla.
-     * La comparación se hace en Java para que distinga mayúsculas de minúsculas.
-     */
+
     public Usuario autenticar(String username, String password) throws SQLException {
         if (username == null || username.isBlank() || password == null || password.isEmpty()) {
             return null;

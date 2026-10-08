@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Bean @RequestScoped: calcula los indicadores del dashboard en cada visita. */
 @Named("dashboardBean")
 @RequestScoped
 public class DashboardBean {

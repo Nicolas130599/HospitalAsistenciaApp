@@ -23,7 +23,6 @@
                                 La hora de entrada y el estado (puntual o tardanza) se calculan automáticamente.
                             </p>
 
-                            <!-- enctype multipart: necesario para adjuntar el documento de sustento -->
                             <h:form id="formRegistro" enctype="multipart/form-data">
 
                                 <div class="mb-3">
@@ -35,7 +34,6 @@
                                                  styleClass="form-control #{component.valid ? '' : 'is-invalid'}"
                                                  pt:placeholder="Ej. 74829102" pt:inputmode="numeric" pt:autocomplete="off">
                                         <f:validateRegex pattern="\d{8}"/>
-                                        <!-- AJAX: al salir del campo se busca el DNI en la tabla personal -->
                                         <f:ajax event="blur" listener="#{asistenciaBean.buscarPersonal}"
                                                 render="dni msgDni nombre cargo turno avisoPersonal"/>
                                     </h:inputText>
@@ -90,7 +88,6 @@
                                     </div>
                                 </div>
 
-                                <!-- AJAX: al marcar el interruptor se muestra/oculta el panel sin recargar la página -->
                                 <div class="form-check form-switch permiso-switch p-3 ps-5 mb-3">
                                     <h:selectBooleanCheckbox id="chkPermiso" value="#{asistenciaBean.permisoSolicitado}"
                                                              styleClass="form-check-input">

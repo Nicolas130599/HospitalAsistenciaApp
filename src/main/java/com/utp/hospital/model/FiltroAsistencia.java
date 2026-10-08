@@ -3,21 +3,18 @@ package com.utp.hospital.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-/**
- * Criterios de búsqueda del listado. Todos son opcionales y se combinan con AND,
- * de modo que el resultado respeta TODOS los filtros activos a la vez.
- */
+
 public class FiltroAsistencia implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer idPersonal;   // un colaborador específico
-    private String texto;         // fragmento de DNI o de nombre
-    private String cargo;         // Médico, Enfermera...
-    private String turno;         // nombre del turno asignado al colaborador
-    private String estado;        // Puntual / Tardanza / Permiso
-    private String permiso;       // "Si" = con permiso, "No" = sin permiso
-    private String tipoPermiso;   // nombre del tipo de permiso
+    private Integer idPersonal; 
+    private String texto;        
+    private String cargo;       
+    private String turno;    
+    private String estado;  
+    private String permiso; 
+    private String tipoPermiso; 
     private LocalDate desde;
     private LocalDate hasta;
 

@@ -12,10 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
-/**
- * Filtro de autenticación: solo deja pasar a las páginas .xhtml si hay un
- * usuario en sesión. login.xhtml y los recursos de Faces (CSS, imágenes) son públicos.
- */
+
 @WebFilter(filterName = "AuthFilter", urlPatterns = {"*.xhtml"})
 public class AuthFilter implements Filter {
 
@@ -38,7 +35,6 @@ public class AuthFilter implements Filter {
         }
 
         if (autenticado) {
-            // Evita que el botón "Atrás" muestre páginas privadas tras cerrar sesión.
             res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             res.setHeader("Pragma", "no-cache");
             res.setDateHeader("Expires", 0);
@@ -57,7 +53,6 @@ public class AuthFilter implements Filter {
 
         String destino = req.getContextPath() + "/login.xhtml";
         if ("partial/ajax".equals(req.getHeader("Faces-Request"))) {
-            // Petición AJAX de JSF con la sesión vencida: se pide al navegador ir al login.
             res.setContentType("text/xml;charset=UTF-8");
             res.getWriter().printf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                     + "<partial-response><redirect url=\"%s\"/></partial-response>", destino);

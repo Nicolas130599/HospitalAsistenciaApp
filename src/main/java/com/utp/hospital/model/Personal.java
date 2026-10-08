@@ -2,7 +2,6 @@ package com.utp.hospital.model;
 
 import java.io.Serializable;
 
-/** DTO de la tabla personal (médicos, enfermeras, técnicos...). */
 public class Personal implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -16,8 +15,7 @@ public class Personal implements Serializable {
     public Personal() {
     }
 
-    /** Texto para listas desplegables: "Dr. Carlos Mendoza (74829102)". */
-    public String getEtiqueta() {
+   public String getEtiqueta() {
         return nombre + " (" + dni + ")";
     }
 
